@@ -135,6 +135,10 @@
   </div>
   <div class="app-titlebar-spacer" aria-hidden="true"></div>
   <div class="app-titlebar-actions">
+    <div class="topbar-chips active-run-visibility" id="activeRunVisibility" hidden>
+      <button class="chip active-run-pill" id="activeRunPill" type="button" aria-expanded="false" aria-controls="activeRunTray"></button>
+      <div class="active-run-tray" id="activeRunTray" role="menu" hidden></div>
+    </div>
     <div class="app-titlebar-status has-tooltip" id="appTitlebarStatus" data-tooltip="Daemon status & version">
       <span class="status-dot online" id="daemonStatusDot"></span>
       <span class="version-text" id="daemonVersionText">v—</span>

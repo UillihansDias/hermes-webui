@@ -87,3 +87,5 @@ macos/.swiftpm/
 macos/*.app
 macos/AppIcon.iconset
 
+# local git worktrees (not for commit)
+.worktrees/

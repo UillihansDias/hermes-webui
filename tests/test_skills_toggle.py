@@ -43,6 +43,10 @@ def test_render_skills_produces_toggle_buttons():
     """renderSkills() must include toggleSkill and skill-toggle."""
     assert "toggleSkill(" in PANELS_JS
     assert "skill-toggle" in PANELS_JS
+    assert "document.createElement('button')" in PANELS_JS
+    assert "toggle.type = 'button'" in PANELS_JS
+    assert "toggle.setAttribute('role', 'switch')" in PANELS_JS
+    assert "toggle.setAttribute('aria-checked', String(!isDisabled))" in PANELS_JS
 
 
 def test_toggle_skill_function_defined():

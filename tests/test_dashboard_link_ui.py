@@ -127,7 +127,11 @@ _DASHBOARD_LINK_DRIVER = textwrap.dedent(
     global._dashboardStatusFetchedAt = 0;
     global._dashboardSettingsLoadSeq = 0;
     global._dashboardSettingsWriteSeq = 0;
-    global.window = { location: { hostname: '127.0.0.1' } };
+    result.openCalls = [];
+    global.window = {
+      location: { hostname: '127.0.0.1' },
+      open: (...args) => { result.openCalls.push(args); return {}; },
+    };
     global.document = {
       createElement: () => makeEl(),
       querySelectorAll: (sel) => {
@@ -192,7 +196,7 @@ _DASHBOARD_LINK_DRIVER = textwrap.dedent(
     for (const name of ['_normalizeDashboardEnabledMode','_setDashboardModeForChip','_getDashboardChipRestoreMode']) {
       eval(extractFn(uiSrc, name));
     }
-    for (const name of ['_dashboardBrowserUrl', '_applyDashboardStatus', 'refreshDashboardStatus', 'loadDashboardSettings', 'saveDashboardSettings']) {
+    for (const name of ['_dashboardBrowserUrl', '_applyDashboardStatus', 'refreshDashboardStatus', 'loadDashboardSettings', 'saveDashboardSettings', 'openHermesDashboard']) {
       let src = extractFn(uiSrc, name);
       if(name === 'saveDashboardSettings'){
         src = src.replace(
@@ -217,6 +221,16 @@ _DASHBOARD_LINK_DRIVER = textwrap.dedent(
     }
 
     (async () => {
+      if (action === 'open') {
+        railBtn.dataset.dashboardUrl = 'http://127.0.0.1:1234';
+        openHermesDashboard({
+          preventDefault() {},
+          stopPropagation() {},
+          currentTarget: railBtn,
+        });
+        console.log(JSON.stringify({ openCalls: result.openCalls }));
+        return;
+      }
       if (action === 'load') {
         await loadDashboardSettings();
         recordButtons();
@@ -340,9 +354,14 @@ def test_dashboard_nav_buttons_are_hidden_by_default_and_subpath_safe():
     assert "href=\"/" not in INDEX_HTML
 
 
-def test_dashboard_rail_item_sits_between_insights_and_settings_spacer():
+def test_dashboard_eye_sits_in_the_rail_utility_zone():
     rail = re.search(r'<nav class="rail".*?</nav>', INDEX_HTML, re.DOTALL).group(0)
-    assert rail.index('data-panel="insights"') < rail.index('id="dashboardRailBtn"') < rail.index('rail-spacer')
+    assert rail.index('rail-spacer') < rail.index('id="dashboardRailBtn"') < rail.index('id="railThemeToggle"')
+    assert 'id="btnFocusMode"' not in rail
+    eye = re.search(r'id="dashboardRailBtn"[\s\S]*?</button>', rail).group(0)
+    assert "openHermesDashboard(event)" in eye
+    assert '<path d="M1 12s4-8 11-8' in eye
+    assert "dashboard-external-badge" not in eye
 
 
 def test_dashboard_frontend_fetches_status_with_sixty_second_cache():
@@ -370,9 +389,31 @@ def test_dashboard_frontend_opens_external_tab_safely_and_derives_browser_host_u
     assert re.search(r'id="dashboardRailBtn"[^>]*onclick="openHermesDashboard\(event\)"', INDEX_HTML)
 
 
-def test_dashboard_loopback_warning_and_external_badge_are_present():
+@requires_node
+def test_dashboard_eye_opens_the_resolved_dashboard_url():
+    out = _run_dashboard_link_driver("open")
+    assert out["openCalls"] == [
+        ["http://127.0.0.1:1234", "_blank", "noopener,noreferrer"]
+    ]
+
+
+def test_macos_wrapper_routes_dashboard_popup_to_the_system_browser():
+    source = (
+        REPO
+        / "macos"
+        / "Sources"
+        / "HermesAgent"
+        / "BrowserWindowController.swift"
+    ).read_text("utf-8")
+    assert "createWebViewWith configuration: WKWebViewConfiguration" in source
+    assert "navigationAction.targetFrame == nil" in source
+    assert "NSWorkspace.shared.open(url)" in source
+
+
+def test_dashboard_loopback_warning_and_mobile_external_badge_are_present():
     assert "dashboard_loopback_warning" in UI_JS
-    assert "dashboard-external-badge" in INDEX_HTML
+    mobile = re.search(r'id="dashboardMobileBtn"[\s\S]*?</button>', INDEX_HTML).group(0)
+    assert "dashboard-external-badge" in mobile
     assert ".dashboard-external-badge" in STYLE_CSS
     assert "dashboard-link-visible" in STYLE_CSS
 

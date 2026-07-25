@@ -1190,6 +1190,28 @@ class BrowserWindowController: NSWindowController, NSWindowDelegate, WKUIDelegat
         }
     }
 
+    // MARK: - New-window navigation
+
+    /// WKWebView does not create a destination for `window.open(..., "_blank")`
+    /// unless its UI delegate handles the request. Route those links through
+    /// the system browser, matching the app's existing external-link behavior.
+    func webView(
+        _ webView: WKWebView,
+        createWebViewWith configuration: WKWebViewConfiguration,
+        for navigationAction: WKNavigationAction,
+        windowFeatures: WKWindowFeatures
+    ) -> WKWebView? {
+        guard navigationAction.targetFrame == nil,
+              let url = navigationAction.request.url
+        else { return nil }
+
+        let scheme = url.scheme?.lowercased() ?? ""
+        if scheme == "http" || scheme == "https" {
+            NSWorkspace.shared.open(url)
+        }
+        return nil
+    }
+
     // MARK: - Navigation guard (issue #7)
     // Allow only localhost/127.0.0.1 navigation. All other http/https links open in
     // Safari. file:// is blocked entirely.

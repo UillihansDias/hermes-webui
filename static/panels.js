@@ -4870,9 +4870,13 @@ function renderSkills(skills) {
       el.className = 'skill-item' + (skill.disabled ? ' disabled' : '');
       el.style.display = collapsed ? 'none' : '';
       const isDisabled = skill.disabled || false;
-      const toggle = document.createElement('span');
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
       toggle.className = 'skill-toggle' + (isDisabled ? '' : ' enabled');
       toggle.title = isDisabled ? t('skill_disabled') : t('skill_enabled');
+      toggle.setAttribute('role', 'switch');
+      toggle.setAttribute('aria-checked', String(!isDisabled));
+      toggle.setAttribute('aria-label', `${skill.name}: ${toggle.title}`);
       toggle.addEventListener('click', (ev) => {
         ev.stopPropagation();
         toggleSkill(skill.name, !isDisabled);

@@ -1,0 +1,416 @@
+# Changelog
+
+## [v1.7.3] — 2026-07-18
+
+### Fixed
+- **Escape no longer hides the window — PR #93** — pressing Escape with the find bar closed could make the entire window vanish (the last-window close path hides via `orderOut` rather than closing, so the whole app seemed to disappear). Root cause: `cancelOperation(_:)` called `super.cancelOperation` on the no-find-bar path, but that NSResponder key-binding method is declared without an implementation — every bare Escape threw an unrecognized-selector exception inside WebKit's command dispatch (`executeSavedCommandBySelector`), caught by AppKit's event-loop guard but leaving dispatch in an undefined state that could bubble into `performClose`. Escape is now swallowed when the find bar is closed; Escape-closes-find-bar behavior is unchanged. Contributed by @roryford.
+
+## [v1.7.2] — 2026-07-11
+
+### Fixed
+- **Artifact downloads work in the desktop client — PR #90** — clicking a `📎` artifact link (`<a download href="api/media?...">`) did nothing: the `/api/*` navigation guard cancelled the request before WKWebView could turn it into a download. Action-initiated downloads (`shouldPerformDownload`) are now routed to `WKDownload` ahead of the API guard, the `WKDownloadDelegate` is attached for action-initiated downloads too, and the explicit artifact endpoints (`/api/media`, `/api/file/raw`, `/api/folder/download`) stay eligible for response-time `Content-Disposition` download detection. Ordinary API navigations remain blocked. Contributed by @maxon1233.
+- **Dock icon no longer oversized — issue #83** — the app-icon artwork was full-bleed on its canvas, but macOS expects the icon square inset within a transparent margin (~10% per side, the 824/1024 grid). The Dock rendered it visibly larger than every neighbouring icon. The master `Hermes Icon.png` artwork is now inset on a transparent canvas; both `build.sh` and CI consume the same file, so local and release builds get the corrected icon. Reporter: @n1c0la84.
+- **SSH mode no longer bypasses the tunnel** — the browser loaded the raw Target URL instead of the tunnel entrance, so the `ssh -L` forward came up but carried no traffic (`netstat` showed a direct connection to the remote host). `AppDelegate.effectiveTargetURL()` now returns `http://127.0.0.1:<local port>` in SSH mode and the Target URL in Direct mode, applied to launch/reconnect, new windows/tabs, and View → Open in Browser.
+- **Direct mode works with non-localhost URLs (Tailscale/LAN hosts)** — a Target URL like `http://my-box.ts.net:8787` failed with "Cannot connect" even when the server was up: the WKWebView is ATS-exempt (`NSAllowsArbitraryLoadsInWebContent`) but the URLSession preflight, Test Connection, and health ping were not, so ATS rejected their plain-http requests to non-loopback hosts with -1022. All three now use `ReachabilityProbe`, which speaks HTTP over Network.framework (not subject to ATS).
+
+### Added
+- **Tri-state `/health` verification** — the probe issues a real `GET /health` (hand-rolled over NWConnection, TLS for https) rather than just connecting, so it can tell a healthy hermes (2xx + `"status": "ok"`) from a reverse proxy answering for a dead backend (reachable) from nothing listening (unreachable). Surfaced in Test Connection and the direct-mode title dot (● / ◐ / ○); the Dock "!" badge fires only on unreachable.
+- **End-to-end SSH Test Connection** — verifies a real non-interactive login (`ssh -o BatchMode=yes user@host exit`), distinguishing "✗ No SSH" from "✗ Auth failed" (keys refused → `ssh-copy-id` hint). On success it confirms hermes end-to-end: through the live tunnel when every forward-shaping setting matches, otherwise via a temporary `ssh -N -L` built from the fields and torn down after probing — so "✓ Hermes OK" means auth + forward + verified hermes. Reports "✗ Port busy" when the local port is taken (bind pre-check) and clears a stale result when any field or the mode changes.
+- **Preferences: Tunnel selector** — the mode segment is now "Tunnel: None | SSH" (persisted values unchanged); the SSH sections dim/disable instead of hiding, and in SSH mode the Target URL row becomes a read-only derived tunnel-entrance label.
+- **Plaintext-HTTP acknowledgment** — saving a Direct `http://` URL to a non-loopback host prompts a one-time per-host warning that credentials and session data cross the network unencrypted. Loopback is exempt.
+
+### Security
+- SSH username/host fields reject values that could smuggle ssh options (leading `-`, whitespace), enforced at Save, Test Connection, and in `testAuth`/`testForward`. The health probe builds its request from the percent-encoded URL path so encoded CR/LF can't reshape the request.
+- The download fast-path added for artifact links excludes `file://` URLs — a download-attributed `file://` link falls through to the scheme guard that cancels all `file://` navigation, so it can never become a `WKDownload` of a local file. `blob:`/`data:` stay eligible (page-authored content).
+
+## [v1.7.1] — 2026-06-28
+
+### Changed
+- **New cyan caduceus app icon — PR #84** — brand refresh of the app icon. (Retroactive entry; the release shipped without a CHANGELOG update.)
+
+## [v1.7.0] — 2026-05-07
+
+### Added
+- **Discoverable "+" button in single-window state — issue #75** — AppKit's native tab bar (with its own "+" button) only renders when ≥2 tabs are in the group, which means single-window users had no way to discover that tabs exist short of `Cmd+T` muscle-memory. Added a small "+" button at the top-right of the title-bar drag zone that's always visible in single-window state. When a second tab opens and AppKit's own tab bar appears, our button auto-hides so we don't double up with AppKit's "+". Click routes to `AppDelegate.newBrowserTab()` (the same target as `Cmd+T`). Reporter: @cygnusignis. Closes #75.
+- **Standard application menu items (Hide / Hide Others / Show All / Services) — issue #77** — `Cmd+H` did nothing because the hand-rolled application menu in `AppDelegate.setupMenu()` only had About / Check for Updates / Settings / Quit. The `Window → Show Hermes` item used `Cmd+Shift+H` (uppercase `keyEquivalent`), and there was no `NSApplication.hide(_:)` selector registered against any item with `Cmd+H`. Added the standard macOS HIG application-menu group between Preferences and Quit: Services submenu (auto-populated by AppKit via `NSApp.servicesMenu`), Hide [App] (Cmd+H), Hide Others (Option+Cmd+H), and Show All. Reporter: @cygnusignis. Closes #77.
+
+### Fixed
+- **Tab-bar chrome no longer flashes light from overlay or partial-paint samples — issue #70 follow-up** — v1.6.2 stopped reading pixel samples for chrome when a `<meta theme-color>` was available, but the appearance-resolution rule (which decides whether to apply `.aqua` or `.darkAqua`) still flipped to light at any luminance ≥ 0.5. A poisoned UserDefaults cache (e.g. an off-white sample stuck from before v1.6.2) could persist and make the next launch open with `.aqua` even when the user's actual theme was dark — giving them a flash of light AppKit material before the bridge re-sampled. Per Nathan's directive ("default dark, only flip light with strong evidence"), raised the threshold to 0.85 (genuinely near-white). Both code paths — `loadCachedTheme()` on launch and the live `hermesTheme` message handler — now share a single `AppDelegate.appearanceForLuminance(_:)` helper. Canonical light-theme `--bg` values for hermes-webui are #FEFCF7 (~0.99) and #FAF9F5 (~0.98), well above the threshold; canonical dark-theme `--bg` values are around #1A1A1A (~0.10), well below. Anything in the 0.5…0.85 murky middle (overlay dim layers, half-translucent panels, partial-paint mount samples) stays `.darkAqua`. Reporter: @cygnusignis (#70 follow-up).
+- **"Update Now" no longer navigates to a JSON `{"error":"not found"}` page — issue #76** — pressing "Update Now" in the WebUI's update banner could land the WKWebView on a bare JSON page (recovers on app restart). Cause: a race during the post-update server restart where `_waitForServerThenReload()`'s `location.reload()` arrives at a moment when the server's route table is partially built — the home route returns the `{"error":"not found"}` JSON shape via the route table's `_not_found` fallback. Added a defensive guard in `decidePolicyFor` that cancels any in-app navigation to `/api/*` paths. The WebUI's JS treats those as fetch targets only; if a navigation slips through (this race or any future regression), the WKWebView keeps the previous page state visible instead of rendering a JSON body as the entire page. Companion WebUI-side fix tracked at nesquena/hermes-webui#1835 to lock down the home route to never return JSON. Reporter: @cygnusignis. Closes #76.
+
+### Notes
+- Issue #78 (surface compression status) closed as wrong-repo. Real fix targets the WebUI's compression UI gaps — refiled as nesquena/hermes-webui#1832 (in-progress signal), #1833 (in-conversation marker), and #1834 (toast TTL / sticky banner).
+- Issue #73 (latent skin-only sync gap) deferred — every current theme has a distinct `--bg`, so the bug doesn't surface in production. Stays open against a future skin that overlays accent on a shared `--bg`.
+
+## [v1.6.4] — 2026-05-06
+
+### Fixed
+- **Sequential screenshot pastes drop all but the first — bug #1733** — the Mac app's paste handler hardcoded the file name `screenshot.png` for every paste. The WebUI's `addFiles()` helper (`static/ui.js`) dedupes the composer's `pendingFiles` array by `f.name`, so when a user takes multiple screenshots in succession and pastes them one at a time (Cmd+Shift+4 → Cmd+V → Cmd+Shift+4 → Cmd+V → …), only the first pasted image survived in the composer tray. The same workflow worked correctly in a regular browser because `static/boot.js`'s paste path already suffixes the timestamp into the filename. Mirrored that scheme on the Swift side: `screenshot-<msTimestamp>-<sequence>.png` where `<sequence>` is a monotonic per-process counter that disambiguates pastes that land within the same millisecond. Each paste now appears as its own chip in the composer tray and uploads alongside the others. Closes nesquena/hermes-webui#1733.
+
+## [v1.6.3] — 2026-05-06
+
+### Fixed
+- **Native AppKit tab dividers restored** — v1.6.0–v1.6.2 painted `NSWindow.backgroundColor` with the page's exact RGB so the title-bar zone matched the page edge seamlessly. With native tabs visible, that flat fill swamped the tab bar's translucent material — the dividers between tabs disappeared and the active tab no longer read as elevated. Fix: stop overriding `window.backgroundColor`. Let it fall back to AppKit's default for the current `NSAppearance` so the native tab bar paints with its system tonal materials. The SSH footer still tints with the exact page RGB (it has no native treatment to preserve). The WKWebView's `underPageBackgroundColor` and the documentStart background-paint script still backstop new-tab / reload paint with the cached theme, so the no-flicker behaviour from v1.6.1 (fix #52) is preserved.
+- **Cross-tab theme/skin propagation** — Changing the theme in one tab did not re-render sibling tabs — each WKWebView held its own rendered theme until manually reloaded, so users could see two tabs in different themes simultaneously. hermes-webui's `boot.js` does not listen for `storage` events (verified May 2026), so a shared `WKWebsiteDataStore` alone wasn't enough. Fix: when `AppDelegate.updateAppearance` fires (a tab's bridge reported a stable new colour passing the 2.5 s STABILITY_MS gate), broadcast a small JS snippet to every browser window's WKWebView calling `_applyTheme(localStorage.getItem('hermes-theme'))` and `_applySkin(...)` plus the picker-sync helpers. Those functions are top-level in `boot.js` (loaded as a regular `<script>`, not a module), making them globals on `window` and reachable from `evaluateJavaScript`. localStorage is shared across same-origin WKWebViews via the default data store, so each sibling tab reads the values the source tab just wrote via `_pickTheme`/`_pickSkin`. Idempotent on the source tab. `typeof === 'function'` guard handles tabs still mid-load. The cross-tab sync directly references `_applyTheme`/`_applySkin`/`_syncThemePicker`/`_syncSkinPicker` from hermes-webui's `boot.js` — if any of those are renamed or converted to ES module locals, the Mac shim breaks silently. Long-term shape: a stable `window.hermes.setTheme(theme, skin)` API on the web side.
+
+## [v1.6.2] — 2026-05-06
+
+### Fixed
+- **Tab-bar / title-bar strip flashes white in multi-tab sessions, and stays stuck after closing the offending tab — bug #70** — v1.6.1's theme bridge sampled the page background by walking `document.elementsFromPoint(x, y)` at three fixed viewport coordinates. Any opaque modal, lightbox, settings panel, file-tree overlay, or image preview that covered any of the three sample points and stayed visible past the 2.5 s stability gate would make the bridge fire the *overlay's* colour. With multi-tab, that one tab's overlay-derived colour was then propagated to every other window's chrome, producing the symptom Cygnus filed in #70 (white tab strip persisting until the user could refresh). The pixel-sampling architecture is fundamentally fragile against legitimate page overlays. Fix: prefer the WebUI's own `<meta name="theme-color" id="hermes-theme-color">` tag (introduced in hermes-webui v0.51.x+) as the single source of truth — it's page-controlled, overlay-resistant, and updated by `boot.js` whenever the user toggles theme or skin. The bridge falls back to the original pixel-sampling path when the meta tag is absent (older WebUI servers, raw error pages), so behavior is unchanged for self-hosters who haven't updated yet. Also adds a `MutationObserver` on the meta tag's `content` attribute so toggles propagate without waiting for the 2 s poll tick. Closes #70.
+
+## [v1.6.1] — 2026-05-02
+
+### Fixed
+- **AppKit chrome (tab bar, title bar, traffic lights, status bars) now follows the web UI theme dynamically** — v1.6.0's multi-window/tabs feature exposed an appearance mismatch in light mode: the active tab rendered as a bright white strip against the always-dark Hermes web content. Single-window mode hid this since `.fullSizeContentView` + `titlebarAppearsTransparent` left no opaque AppKit chrome to clash with. Fix: a theme-bridge `WKUserScript` samples the page's effective background colour at three viewport pixels (via `document.elementsFromPoint`) and reports it to Swift via `webkit.messageHandlers.hermesTheme`. `AppDelegate.updateAppearance` propagates the matching `NSAppearance` (.aqua / .darkAqua) and the exact RGB to every browser, Preferences, Error, and Splash window — keeping the tab-bar strip, title bar, traffic lights, and SSH footer in lock-step with whatever theme the web UI currently shows. Three layers of defense against flicker: (1) match-suppression — samples that match the chrome's current colour are dropped silently, (2) 2500 ms stability gate — non-matching samples must hold steady for 2.5 s before firing, so React mount-time dark flashes never propagate, (3) persisted theme cache (UserDefaults, 7-day TTL) — `loadCachedTheme()` runs before `startTunnel` so the splash and first browser window open with the last-seen theme. Pre-paint `underPageBackgroundColor` and the `documentStart` body/html background script both read the cached colour, so Cmd+R and new-tab paint the correct theme from the very first frame.
+- **Tab title shows the active conversation name** — `webView.title` is mirrored into `window.title` via KVO, with a regex-strip of trailing `" — Hermes"` / `" — Hermes Agent"` / pipe-or-hyphen-or-middle-dot separators so the brand suffix doesn't repeat noise on a Mac tab. Truncated to 40 chars with an ellipsis for longer titles. Falls back to `"Hermes Agent  ● host:port"` in direct mode (preserving the v1.5.0 health indicator) and `"Hermes Agent"` in SSH mode (the SSH status bar already surfaces host info).
+- **SSH status bar at the bottom of the window now matches the page background colour exactly** — `NSVisualEffectView .titlebar` material was tinting the colour off via vibrancy, breaking the visual seam between the tab-bar strip and the SSH footer. Switched to plain `NSView` with explicit `.layer.backgroundColor = currentBackgroundColor.cgColor`, applied through a new `applyChromeBackgroundColor(_:)` method that `AppDelegate.updateAppearance` calls on every browser window. The 1-px separator re-resolves `NSColor.separatorColor.cgColor` in the window's effective appearance to keep its tone crisp.
+- **Web-app titlebar auto-hides when the native AppKit tab bar is rendering** — once you have multiple tabs, the AppKit tab strip already shows each conversation's name (mirrored from `webView.title` via the KVO bridge). The web app's redundant `.app-titlebar` row (hard-coded "Hermes" text + sub badge) collapses via a `body.hermes-mac-tabbed` class injected at documentStart, then toggled by a new `updateAppTitlebarClass(tabbed:)` helper on every `updateWebViewLayout` pass and after `didFinish`. Closing tabs back down to one restores it. Bonus: switched the visibility check from raw `tabbedWindows.count > 1` to `NSWindowTabGroup.isTabBarVisible`, which also catches the explicit Window → Show Tab Bar case with a single window (a latent v1.6.0 bug where AppKit's bar would clip web content when manually requested).
+- **Find bar covered by webView on resize / tab change (#68)** — v1.6.0's `updateWebViewLayout()` (called from `windowDidResize`, fullscreen transitions, and the `tabbedWindows` KVO observer) didn't consult `findBarVisible`, so any of those triggers grew the WKWebView frame back over the find bar — hiding the search field while the bar remained in the view hierarchy. Fixed by subtracting the 36 px find-bar height from `topY` when the find bar is open. The find bar's own frame is anchored to `contentLayoutRect.maxY - barHeight` so it follows the title-bar zone correctly across all transitions; only webView height needed the carve-out.
+
+Engineering notes: most of this branch is the dynamic-theme-tracking architecture. Three layers of flicker defense (match-suppression, 2500 ms stability gate, persisted UserDefaults cache) work together so the only situation a user sees a colour change is when they actually toggled themes — never on Cmd+R, Cmd+T, or app launch. The 2500 ms gate makes user-initiated theme toggles feel slightly delayed (the chrome catches up 2.5 s after the page); future work could expose an explicit hermes-webui → Mac wrapper signal that bypasses the gate for known-deliberate changes.
+
+## [v1.6.0] — 2026-05-02
+
+### Added
+- **Multi-window and native tabs (#42)** — open multiple independent Hermes sessions from the same app. `Cmd+N` opens a new window; `Cmd+T` does the same and lands as a tab when the user's "Prefer Tabs" system preference is set to Always (or In Full Screen). Each window owns its own `WKWebView` so server-side sessions stay independent — chat history, scroll position, in-flight streams, cookies, and localStorage are preserved per window. AppKit's native tabbing system fills in `Show Tab Bar`, `Show All Tabs`, `Move Tab to New Window`, and `Merge All Windows` automatically in the Window menu, plus the tab-bar plus button (wired through `newWindowForTab`). The frontmost browser window receives all menu actions (Find, Zoom, Reload); the global hotkey (default `Cmd+Shift+H`) and Dock-icon click both surface the most-recently-active window. Reconnect logic (SSH tunnel restore, network recovery via `NWPathMonitor`, manual retry) fans out across every open window — every WKWebView reloads in place, no session loss. Window frame autosave applies only to the first window of a session; subsequent windows cascade from the front-most window's frame so they're visibly stacked. Closes #42.
+
+  Engineering notes: Opus pre-commit advisor caught four real correctness bugs before this shipped — (1) `onNavigationFailed` retain cycle leaking the BrowserWindowController + WKWebView for every nav failure, (2) `windowShouldClose` returning `false` unconditionally caused closed tabs to phantom in `browserWindows` because `windowWillClose` doesn't fire on `orderOut`, (3) `windowDidExitFullScreen` clobbered `windowWasFullScreen` even when other windows remained fullscreen, (4) `alphaValue=0` fade-in created a visible flash on tabs joining an existing tab group. All four fixed inline before push.
+
+## [v1.5.4] — 2026-05-02
+
+### Fixed
+- **Download links now save instead of rendering raw content** — clicking a download link in the web UI loaded the raw response data into the WKWebView window instead of prompting for a save location. The `decidePolicyFor navigationResponse` handler now intercepts responses whose `Content-Disposition` header begins with `attachment` (case-insensitive) **or** whose MIME type WebKit can't render, and hands them off to `WKDownload`. The new `WKDownloadDelegate` extension presents an `NSSavePanel` pre-filled with the server's suggested filename, runs as a sheet on the main window, and surfaces failures via a sheet alert. Closes the gap where attachments from the chat UI (file exports, downloads from previous sessions, etc.) had no way to be saved. (#66, thanks @redsparklabs)
+
+## [v1.5.3] — 2026-04-28
+### Fixed
+- **Window drag regression** — after the v1.5.0 `.fullSizeContentView` change, the main window could no longer be moved by dragging the title bar. `WKWebView` covers the full content area including the transparent native title bar strip and intercepts all mouse events; `-webkit-app-region: drag` in the web page's CSS has no effect on `NSWindow` dragging. Fixed by adding a thin transparent `TitleBarDragView` overlay positioned over the title bar zone (height 38 px, matching `.app-titlebar` in the web UI) that calls `window.performDrag(with:)` on `mouseDown`. The view is fully transparent and only captures hits within its own bounds. Traffic lights live in `NSThemeFrame` above `contentView` and are unaffected. (fixes #64)
+
+## [v1.5.2] — 2026-04-25
+
+### Fixed
+- **Title bar text re-centered** — v1.5.1 hid the `.app-titlebar-icon` with `display: none`,
+  which collapsed its layout space and shifted the title text left. Changed to
+  `visibility: hidden` so the icon is invisible but still occupies its flex slot, keeping
+  the title centered as intended. Closes #61.
+
+## [v1.5.1] — 2026-04-25
+
+### Fixed
+- **Title bar icon no longer overlaps traffic lights** — the web app's `.app-titlebar-icon`
+  SVG logo is hidden when running inside the Mac wrapper via an injected `documentStart`
+  stylesheet. With `.fullSizeContentView` (added in v1.5.0) the icon appeared right next
+  to the close button. The rest of the web title bar is unaffected. Closes #59.
+
+## [v1.5.0] — 2026-04-25
+
+### Added
+- **Configurable global hotkey** — the hardcoded Cmd+Shift+H shortcut is now user-configurable
+  in Preferences. Click the new recorder field to arm it, press any combo with Cmd/Ctrl/Option,
+  and the shortcut updates immediately. Press Delete while recording to clear (disable) the
+  hotkey. The combo is persisted in UserDefaults and survives app restarts. Closes #41.
+
+### Changed
+- **Full-size content view** — web content now extends under the native macOS title bar using
+  `.fullSizeContentView` + `titlebarAppearsTransparent`. The web app's custom `.app-titlebar`
+  element sits in the title-bar region, eliminating the doubled native/web header. Traffic
+  lights stay visible via a `--traffic-light-width` CSS custom property (default `80px`,
+  refined to the exact measured value after first paint). The variable resets to `0px` in
+  fullscreen and restores on exit. Closes #57.
+
+### Fixed
+- **Session state preserved on reconnect** — tunnel drops, network blips, and manual reconnects
+  no longer destroy the WKWebView. The existing browser window is hidden (orderOut) and reused
+  on reconnect via `reconnectInPlace()`, preserving localStorage, cookies, IndexedDB, and
+  scroll position. The WKWebView is only replaced when the error window takes over on a failed
+  reconnect. Closes #10.
+
+## [v1.4.1] — 2026-04-23
+
+### Added
+- **Find submenu in Edit menu** — Edit → Find → Find… (Cmd+F), Find Next (Cmd+G),
+  Find Previous (Cmd+Shift+G). Makes the find feature discoverable via the standard
+  macOS menu convention instead of requiring users to know the shortcut.
+
+## [v1.4.0] — 2026-04-23
+
+### Fixed
+- **White flash on startup eliminated (for real this time)** — the window is now started
+  with `alphaValue = 0` and fades in (0.15s) on `didFinishNavigation` — the point at which
+  WKWebView has actually painted its first frame. A `hasCompletedFirstPaint` flag ensures
+  the animation only fires once; SPA route changes and Cmd+R reloads are unaffected.
+  Additionally, the NSWindow frame background and the WKWebView pre-paint `documentStart`
+  script are both set to `#1a1a1a` (dark) regardless of the system colour scheme, so any
+  gap between window-visible and first paint is never white in any situation. Closes #52.
+
+### Added
+- **Find in page — Cmd+F** — pressing Cmd+F opens a native find bar (NSSearchField overlay
+  with vibrancy) anchored below the title bar. `‹` / `›` buttons and Cmd+G / Cmd+Shift+G
+  cycle through results via `window.find()` JS. Pressing Done or Escape closes the bar.
+  Closes #37, closes #45.
+
+### Changed
+- **Connection error copy no longer hardcodes `~/hermes-webui-public`** — the error
+  window now says "Run: bash start.sh (or: docker compose up -d)" instead of the path
+  that only applied to one specific install layout. Closes #40.
+
+## [v1.3.6] — 2026-04-20
+
+### Fixed
+- **`build.sh` now embeds entitlements in local ad-hoc builds** — `codesign` in `build.sh`
+  was signing without `--entitlements Entitlements.plist`, so locally-built `.app` bundles
+  never had any embedded entitlements (including `com.apple.security.device.audio-input`).
+  CI was correct (it already passed `--entitlements`). Local builds now embed the same
+  entitlements as CI-signed DMGs, making mic and other entitlement-gated features testable
+  without a full CI run. (reviewer follow-up from #50)
+- **Stale comment in `LaunchBehaviorTests`** — the warm-up regression history comment still
+  referenced `default(for:)` and omitted the v1.3.5 entitlement root cause. Updated to
+  accurately describe the fix history through v1.3.5. (reviewer follow-up from #50)
+
+## [v1.3.5] — 2026-04-20
+
+### Fixed
+- **Microphone actually works — root cause finally found** — the `Entitlements.plist` had
+  `com.apple.security.device.microphone` which is not a valid hardened-runtime entitlement
+  key and is silently ignored by the codesigner. The correct key is
+  `com.apple.security.device.audio-input`. Every DMG since the beginning of the project was
+  signed without the actual mic entitlement, making `getUserMedia()` fail at the OS level
+  regardless of TCC status. Fixed in `Entitlements.plist`. CI applies the plist via
+  `--entitlements Entitlements.plist` so the fix propagates automatically.
+- **WKUIDelegate mic delegate no longer short-circuits on `.authorized`** — the previous
+  implementation checked `AVCaptureDevice.authorizationStatus` and called
+  `decisionHandler(.grant)` directly when `.authorized`, bypassing `requestAccess`. That
+  bypass skips the XPC message to `tccd` that WebContent needs for its capture attribution
+  to succeed. The delegate now always routes through `AVCaptureDevice.requestAccess` — when
+  already `.authorized` it completes immediately with no UI, when `.notDetermined` it shows
+  the OS prompt, when `.denied` it shows the recovery alert. (user-reported)
+- **`warmUpCaptureSubsystem` now uses `requestAccess` instead of `AVCaptureDevice.default`** —
+  `default(for: .audio)` only queries IOKit and does not contact `tccd`. `requestAccess`
+  sends the XPC message that primes the attribution chain for WebContent.
+
+### Added
+- **Regression documentation tests** — `LaunchBehaviorTests.swift` with documented invariants
+  for `warmUpCaptureSubsystem` and the window frame autosave pattern. Tests pass trivially
+  but carry the full regression history so future refactors cannot delete these invariants
+  silently. Test count: 20 → 22. (reviewer follow-up from #49)
+
+## [v1.3.4] — 2026-04-20
+
+### Fixed
+- **Microphone actually works again** — `getUserMedia()` was failing with `NotAllowedError`
+  even when TCC was `.authorized` (mic enabled in System Settings). Root cause: removing the
+  launch-time `requestMicrophonePermission()` call in v1.3.2 also removed its undocumented
+  side effect of initialising AVFoundation in the host process. The WebContent XPC process
+  has no `audio-input` entitlement of its own and inherits TCC attribution via the host's
+  active AVFoundation session. Without that session, capture fails at the platform layer
+  regardless of the delegate returning `.grant`. Fixed: `warmUpCaptureSubsystem()` calls
+  `AVCaptureDevice.default(for: .audio)` silently at launch — no UI, no prompt, no change
+  in UX — purely to establish the attribution chain that WebContent inherits.
+  (user-reported regression since v1.3.2)
+- **Shared window autosave name constant** — `"HermesMainWindow"` appeared twice in
+  `BrowserWindowController`: once as the `windowFrameAutosaveName` value and once embedded
+  in the derived UserDefaults key `"NSWindow Frame HermesMainWindow"`. Extracted to
+  `private static let windowAutosaveName`. The derived key is now interpolated from the
+  constant, eliminating the drift risk. (reviewer follow-up from #48)
+
+## [v1.3.3] — 2026-04-20
+
+### Fixed
+- **Microphone "access denied" error after v1.3.2 upgrade** — v1.3.2 correctly removed the
+  aggressive launch-time mic prompt, but also inadvertently removed the recovery path for users
+  whose TCC permission was already `.denied`. Those users got silent failure with no way back.
+  Fixed: the `.denied` branch now calls `decisionHandler(.deny)` immediately (so WebKit doesn't
+  wait) and then shows a single "Open System Settings" alert pointing to Privacy & Security →
+  Microphone. Throttled to once per app session so it can't spam. (user-reported regression from v1.3.2)
+- **Window size still resetting to default after v1.3.2** — the v1.3.2 fix called
+  `setFrameAutosaveName` and `setFrameUsingName` on the raw `NSWindow` before `super.init`.
+  `NSWindowController` has its own `windowFrameAutosaveName` property that both saves and
+  restores the frame — when the controller initialises, its default empty value overwrote the
+  window-level setting, so subsequent resizes were never persisted. Fixed: removed the window-level
+  calls and set `self.windowFrameAutosaveName = "HermesMainWindow"` on the controller after
+  `super.init`. AppKit now manages save and restore atomically. `center()` is guarded to
+  first-launch only. (user-reported regression from v1.3.2)
+
+## [v1.3.2] — 2026-04-20
+
+### Fixed
+- **Microphone permission prompt no longer appears on every launch** — removed the proactive
+  `requestMicrophonePermission()` call from `applicationDidFinishLaunching`. That call fired
+  on every launch and, once the user had denied mic access, showed an `NSAlert` on *every*
+  subsequent launch regardless of whether the mic was needed. The `WKUIDelegate` method
+  `requestMediaCapturePermissionFor` already handles mic grants correctly and lazily — the
+  OS prompt only appears the first time the user actually clicks the mic button in the web UI.
+  (user-reported)
+- **Window size now persists across launches** — for programmatically created `NSWindow`
+  instances, `setFrameAutosaveName` saves future frame changes but does not restore the
+  previously saved frame on re-creation. Added `setFrameUsingName("HermesMainWindow")`
+  immediately after the autosave call; `center()` now only runs on first launch (when no
+  saved frame exists). Last used size and position are preserved across restarts. (user-reported)
+- **Navigation failure double-fire guard** — both `didFailProvisionalNavigation` and the
+  5xx `decidePolicyFor navigationResponse` handler can fire on the same failing load event
+  during teardown. Added `didReportNavigationFailure` flag so the error window is only
+  opened once per navigation attempt.
+
+## [v1.3.1] — 2026-04-20
+
+### Fixed
+- **Shared zoom key constant** — `"webViewMagnification"` was defined as a private static
+  in `AppDelegate` and duplicated as a bare string literal in `BrowserWindowController`.
+  Made `AppDelegate.zoomKey` internal so `BrowserWindowController` references the single source
+  of truth. (reviewer follow-up from #44)
+- **NWPathMonitor reconnect scope documented** — added inline comment to `scheduleAutoReconnect`
+  clarifying that it fires on network-link events only, not backend-health events.
+- **`(NSApp.delegate as? AppDelegate)` cast comment** — acknowledged the intentional coupling
+  and why a full protocol abstraction isn't warranted here.
+
+## [v1.3.0] — 2026-04-20
+
+### Added
+- **Auto-reconnect on network restore (NWPathMonitor)** — when WiFi drops and comes back,
+  or a VPN connects, the app automatically re-attempts connection without any manual click.
+  Only fires when the app is already in an error or disconnected state; no action is taken
+  if the backend is simply down with a healthy network. Uses `Network.framework`
+  `NWPathMonitor`, no Accessibility permission required. (closes #38)
+- **Zoom level persistence** — zoom level (Cmd++/Cmd+-/Cmd+0) is now saved to UserDefaults
+  and restored after every page load, including reconnects. (part of closes #43)
+- **Full-screen state persistence** — if the app was in full-screen when quit, it returns to
+  full-screen on next launch. Uses `NSWindowDelegate` `windowDidEnterFullScreen`/
+  `windowDidExitFullScreen` callbacks. (part of closes #43)
+- **Dock icon badge when offline** — the Dock icon shows a "!" badge when the backend is
+  unreachable (direct mode health check failure or SSH tunnel disconnects). Clears
+  automatically when the connection is restored. Visible even when the window is hidden. (closes #39)
+- **View → Open in Browser** — opens the configured Hermes URL in the system default browser.
+  Useful for comparison or debugging without changing any settings.
+
+## [v1.2.2] — 2026-04-20
+
+### Fixed
+- **Preferences window truncation** — widened window from 480 to 520px. "Save & Reconnect" button width increased (100 → 140px) so the label no longer clips. Notification checkbox width increased (290 → 330px) to fit the full label. All section headers, dividers, and input fields scaled accordingly. (fixes #34)
+
+### Added
+- **Window → Show Hermes (⌘⇧H)** — menu item in the Window menu that mirrors the global hotkey, making it discoverable. Teaches the shortcut to users who scan menus. (fixes #35)
+- **Preferences: global shortcut label** — read-only "Global shortcut: ⌘⇧H — bring Hermes forward from any app" row in the APP section of Preferences. (fixes #35)
+- **README: Keyboard shortcuts table** — new section listing all six keyboard shortcuts including the global ⌘⇧H. (fixes #35)
+
+## [v1.2.1] — 2026-04-20
+
+### Fixed
+- **RegisterEventHotKey OSStatus now checked** — if Cmd+Shift+H is already claimed by another app (Alfred, Raycast, etc.), a diagnostic `NSLog` fires instead of silently no-opping. Surfaced by the v1.2.0 independent review.
+- **Redundant `notificationsEnabled` seed removed** — `seedDefaultsIfNeeded()` was setting `notificationsEnabled` alongside `UserDefaults.standard.register(defaults:)`, which already covers both fresh installs and upgrades. The seed in `register(defaults:)` is the authoritative one; the duplicate in `seedDefaultsIfNeeded` is removed.
+- **Notifications checkbox init cleaned up** — `target` and `action` are now set in the `NSButton` initializer directly, removing the redundant two-line post-init reassignment.
+
+## [v1.2.0] — 2026-04-20
+
+### Fixed
+- **Notification copy** — preferences toggle now reads "Show a notification when a response completes while the **app** is in the background" — replacing the old "tab" wording left over from browser context. The toggle is wired to a new UserDefaults key (`notificationsEnabled`, default on) so users can disable native notifications. (fixes #28)
+
+### Added
+- **Cmd+,** — opens Preferences (standard macOS keyboard shortcut). Already wired; documented here explicitly.
+- **Cmd+R** — reloads the WebUI page via a new View → Reload menu item.
+- **Cmd+W** — hides the window instead of quitting. App stays running in the Dock; clicking the Dock icon brings it back. `applicationShouldTerminateAfterLastWindowClosed` returns `false` and `applicationShouldHandleReopen` re-surfaces the window.
+- **Window position memory** — `setFrameAutosaveName("HermesMainWindow")` restores last size and position on every launch.
+- **Global hotkey Cmd+Shift+H** — brings Hermes forward from any app using Carbon `RegisterEventHotKey`. No Accessibility permission required; works on first launch. (closes #6)
+
+## [v1.1.0] — 2026-04-19
+
+### Added
+- **Launch at login** — Preferences now includes a "Launch at login" checkbox (macOS 13+, SMAppService). Correctly handles `.requiresApproval` state and shows a System Settings nudge. Disabled with an inline note on macOS 12. (fixes #3)
+- **View zoom — Cmd+/Cmd− keyboard shortcuts** — new View menu with Zoom In, Zoom Out, and Actual Size. Pinch-to-zoom was already enabled; this adds keyboard control. (fixes #24)
+- **Connection status in window title** — direct-mode window title now shows the active backend host and a live indicator (● connected / ○ offline). A 30-second health poll detects when the backend goes away without a full page reload. (fixes #29)
+
+### Fixed
+- **Non-localhost URLs silently failing** — plain `http://` to Tailscale IPs, LAN addresses, and custom hostnames was blocked by App Transport Security in WKWebView. Added `NSAllowsArbitraryLoadsInWebContent` to Info.plist (both `build.sh` and CI workflow). URLSession (used for connection preflight) keeps default ATS restrictions. (fixes #25)
+- **Dark mode white flash on startup** — WKWebView rendered white before the dark theme loaded. Set `underPageBackgroundColor` to `.windowBackgroundColor` (macOS 12+) and added a `documentStart` userScript to set the HTML background before first paint. (fixes #23)
+- **Error screen didn't name the backend repo** — first-time users who hit "Cannot connect" had no way to find the backend. Added a clickable "github.com/nesquena/hermes-webui" link to the error screen in direct mode. (fixes #27)
+
+## [v1.0.9] — 2026-04-16
+
+### Fixed
+- **SSH tunnel silently broken on servers where `localhost` resolves to IPv6 first** — the tunnel forwarded to `localhost:<port>` on the remote side, but many Linux systems map `localhost` to `::1` ahead of `127.0.0.1` in `/etc/hosts`. Combined with the common case of dev servers binding only to IPv4 `127.0.0.1`, ssh would connect to `[::1]:<port>` and get "connection reset" on every request — while the local port check happily reported "Tunnel connected". The forward now always targets `127.0.0.1`, matching what most dev servers bind to.
+- **"Tunnel connected" shown even when the tunnel was end-to-end broken** — readiness check used to be a local TCP connect to the forwarded port, which ssh accepts immediately regardless of whether the far end is reachable. Replaced with an HTTP round-trip probe so the status reflects what the browser will actually experience.
+- **Try Again button on the connection-error screen led to a permanent white window** — the HTML error page was loaded with a nil base URL, so `window.location.reload()` reloaded `about:blank`. Replaced the WebView error page with a small native error window whose Try Again button re-runs the full connection flow.
+
+### Changed
+- **Connection failures show a compact native window instead of a full-size WebView error page.** The main browser window only opens after the app has verified the server responds — an HTTP preflight runs in direct mode, and in SSH mode the tunnel's HTTP probe gates the browser. If either fails, a small native "Cannot connect" window appears with Try Again and Preferences… buttons.
+
+## [v1.0.8] — 2026-04-17
+
+### Fixed
+- **Test Connection false "Unreachable"** — clicking Test Connection against a running server often showed "✗ Unreachable" even when the server was working. Two bugs: the probe used a `HEAD` request (many dev servers return 405/501 for HEAD even when GET works), and the success range was restricted to HTTP 200–399 (so a 404 or 500 falsely showed as unreachable). Now uses GET and treats any HTTP response as reachable — only an actual network failure shows ✗.
+- **App icon rendered with a white chrome frame in the Dock** — the source PNG had a ~260 px opaque light-gray margin around the squircle, which showed up as a pale tile behind the icon on dark Dock backgrounds. Replaced with a properly cropped icon where the squircle fills the full canvas edge-to-edge and the area outside the rounded corners is genuinely transparent.
+
+### Changed
+- **Release notes now mirror the CHANGELOG.** The GitHub release body (and therefore Sparkle's "update available" dialog) now starts with a "What's changed" section auto-extracted from this file for the matching version tag, so users can see the actual list of fixes instead of generic download boilerplate. New releases without a CHANGELOG entry show a clear placeholder.
+
+## [v1.0.7] — 2026-04-17
+
+### Fixed
+- **Auto-update "error launching the installer"** — clicking **Install Update** from the Sparkle dialog failed with "An error occurred while launching the installer" because the app was shipping Sparkle's sandboxed XPC services (`Downloader.xpc`, `Installer.xpc`) despite not being sandboxed itself. Per Sparkle's own docs, XPC services are only for sandboxed apps; shipping them in a non-sandboxed app causes launchd to reject the XPC launch. With the XPCs removed from the embedded framework, Sparkle falls back to its in-process installer path, which is the supported flow for non-sandboxed apps.
+
+## [v1.0.6] — 2026-04-17
+
+### Added
+- macOS notifications (#8) — when a response finishes while the app window is in the background, a native macOS notification appears. Permission is requested on first trigger. Works via a debounced MutationObserver injected into the WebView.
+- Test Connection button in Preferences (#4) — click to verify the target URL is reachable before saving. Shows "✓ Connected" or "✗ Unreachable" inline with a 5-second timeout. Works for both direct and SSH tunnel modes.
+
+### Fixed
+- White screen on failed connection (#12) — if the WebView cannot reach the server, a helpful error page now loads instead of a blank white screen. Shows the target URL, mode-specific guidance (direct: start command, SSH: tunnel check), and a Try Again button.
+
+## [v1.0.4] — 2026-04-16
+
+### Added
+- Sparkle 2 auto-update support — app now checks `https://hermes-webui.github.io/hermes-swift-mac/appcast.xml` on launch and shows a native update dialog when a new version is available. A "Check for Updates…" menu item is available under the app menu at any time. (PR #21, closes #17)
+- `Entitlements.plist` — hardened runtime entitlements for network access and microphone. Required for notarization. App remains unsandboxed so SSH tunnel (NSTask) continues to work. (PR #21)
+- `appcast.xml` template in repo root — Sparkle update feed published at `https://hermes-webui.github.io/hermes-swift-mac/appcast.xml`. (PR #21)
+
+### Fixed
+- WKWebView navigation guard — external links (any http/https URL that is not localhost or the configured SSH host) now open in Safari instead of navigating inside the app. `file://` URLs are blocked entirely. (PR #21, closes #7)
+
+### Changed
+- CI release workflow now imports a Developer ID Application certificate, signs the app with hardened runtime, notarizes via `notarytool`, and staples the ticket to the DMG. Users on v1.0.4+ will no longer see the Gatekeeper "unidentified developer" warning on first launch. (PR #21)
+- CI generates a Sparkle ed25519 signature for each DMG and embeds it in the release notes for appcast maintenance. (PR #21)
+
+## [v1.0.3] — 2026-04-16
+
+### Added
+- Microphone permission prompt at app launch — macOS shows the system dialog on first run before the user touches the mic button. If previously denied, a native alert appears with an "Open System Settings" button linking directly to Privacy & Security → Microphone. (PR #18, fixes #16, by @redsparklabs)
+- `requestMediaCapturePermissionFor` WKUIDelegate method — WKWebView now forwards microphone access requests through the macOS TCC authorization lifecycle before granting or denying `getUserMedia`. Without this, the browser `getUserMedia` call silently fails even when system permission is granted. (PR #18, fixes #16, by @redsparklabs)
+- `NSMicrophoneUsageDescription` added to Info.plist (both build.sh and CI workflow) — macOS requires this string to show the system microphone permission dialog. Previously present only in build.sh, now also in the CI workflow so downloaded DMGs work correctly. (PR #18, fixes #16)
+
+### Fixed
+- Web notification permission prompts suppressed — a WKUserScript overrides `Notification.requestPermission` to always resolve as "denied", preventing browser-style permission dialogs from appearing inside the native wrapper. UNUserNotificationCenter is the correct path for response alerts in a native app. (PR #18, fixes #14, by @redsparklabs)
+- `webkitSpeechRecognition` suppressed via WKUserScript — forces hermes-webui to fall back to its MediaRecorder + `/api/transcribe` backend path, which works reliably. WebKit's built-in local speech model is slow and inconsistent. (PR #18, by @redsparklabs)
+
+All notable changes to Hermes Agent for macOS are documented here.
+
+## [v1.0.2] — 2026-04-16
+
+### Fixed
+- Buttons like "New conversation" had no effect when the WebView lost focus; the first click was consumed entirely by focus restoration and never reached JavaScript. Fixed by subclassing `WKWebView` as `HermesWebView` and overriding `acceptsFirstMouse` to return `true`, so a refocusing click also registers as content interaction. (PR #19, fixes #13, by @redsparklabs)
+- Keyboard shortcuts (Cmd+K, etc.) required an extra click after switching away and back. Fixed by implementing `NSWindowDelegate.windowDidBecomeKey` to restore WebView keyboard focus whenever the window becomes key. (PR #19, by @redsparklabs)
+
+## [v1.0.1] — 2026-04-15
+
+### Fixed
+- `CFBundleShortVersionString` missing from `build.sh` — locally-built apps showed an empty version string in About dialog and Finder Get Info. Now set from the version argument. (PR #1)
+- `SplashWindowController` container view did not resize with the window — missing `autoresizingMask = [.width, .height]`. Fixed. (PR #1)
+
+### Changed
+- README improvements: added install instructions, Gatekeeper workaround, SSH security section, architecture table, troubleshooting guide. (PR #1)
+
+## [v1.0.0] — 2026-04-15
+
+Initial public release.
+
+- Native macOS app wrapping Hermes Web UI in a WKWebView window — no Electron, no dependencies beyond Xcode Command Line Tools
+- Direct (local) mode connecting to `http://localhost:8787` by default
+- SSH tunnel mode with full lifecycle management — start, monitor, reconnect, graceful teardown on quit
+- Clipboard integration: paste text (JSON-encoded for safety) and images (base64, in-memory) via Cmd+V
+- File upload support via the native open panel
+- Native Preferences window (Cmd+,) with port validation and scheme enforcement
+- Splash screen while connecting or establishing the SSH tunnel
+- Status bar with live tunnel state and one-click Reconnect button (SSH mode only)
+- Edit menu for Undo, Redo, Cut, Copy, Paste, Select All (required for WKWebView responder chain)
+- Safe signal handling via DispatchSource (SIGTERM, SIGINT)
+- SSH security: `StrictHostKeyChecking=accept-new`, `ExitOnForwardFailure=yes`, `Process.arguments` array (no shell injection)
+- Universal binary (arm64 + x86_64) built and released via GitHub Actions on tag push
+- Created by [@redsparklabs](https://github.com/redsparklabs)

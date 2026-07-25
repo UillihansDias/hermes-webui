@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymaurer.ch/developer/sparkle/rss/2.0/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <channel>
+        <title>Hermes Agent Updates</title>
+        <link>https://hermes-webui.github.io/hermes-swift-mac/appcast.xml</link>
+        <description>Hermes Agent changelog and update feed</description>
+        <language>en</language>
+
+        <item>
+            <title>Version 1.7.3</title>
+            <pubDate>Sat, 18 Jul 2026 19:25:54 +0000</pubDate>
+            <sparkle:version>1.7.3</sparkle:version>
+            <sparkle:shortVersionString>1.7.3</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.7.3</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.7.3/Hermes-Agent-v1.7.3.dmg"
+                sparkle:edSignature="3SgWVyjHiAvs61KUPiNW9Rq0h3TZkKlVLA/hJOIQp/lzRNbYNe8w6eiYzct5yRT/HAsK6+ycfIna1LQRByPQCQ=="
+                length="2295557"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.7.2</title>
+            <pubDate>Sat, 11 Jul 2026 23:20:41 +0000</pubDate>
+            <sparkle:version>1.7.2</sparkle:version>
+            <sparkle:shortVersionString>1.7.2</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.7.2</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.7.2/Hermes-Agent-v1.7.2.dmg"
+                sparkle:edSignature="qQ9nd+VX1T8x80QU0zwHGFxc62fSsXZPj4mrJoBjoShthSkjNMiZkPLU2MNjx5dr2Szw1LwH2r8Lcj1bh0naDg=="
+                length="2296183"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.7.1</title>
+            <pubDate>Sun, 28 Jun 2026 20:09:17 +0000</pubDate>
+            <sparkle:version>1.7.1</sparkle:version>
+            <sparkle:shortVersionString>1.7.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.7.1</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.7.1/Hermes-Agent-v1.7.1.dmg"
+                sparkle:edSignature="/AnTeJiQTyGeEuWzJRE+2wDn7/sWe23o628I48fuDR7LsrdXzICwt4lMLYX+7JO8+BGlhGDHLkpEzkdmOINaDw=="
+                length="2214177"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.7.0</title>
+            <pubDate>Thu, 07 May 2026 18:12:38 +0000</pubDate>
+            <sparkle:version>1.7.0</sparkle:version>
+            <sparkle:shortVersionString>1.7.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.7.0</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.7.0/Hermes-Agent-v1.7.0.dmg"
+                sparkle:edSignature="xtZqwv0K42lxtWqTMnfY9NkKkow0FjVIQRtgLELhHzz4okO+bxW8AJWNeSewt+uZ+IWW8+/aqkxoen44kPmlAw=="
+                length="3791010"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.6.4</title>
+            <pubDate>Wed, 06 May 2026 20:01:18 +0000</pubDate>
+            <sparkle:version>1.6.4</sparkle:version>
+            <sparkle:shortVersionString>1.6.4</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.6.4</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.6.4/Hermes-Agent-v1.6.4.dmg"
+                sparkle:edSignature="ooY5aCbm7JHIx9QKyHvF3yrsu+/HdF1kLUfAMSHloOPXDNMzkjKKw0r/wLOh01DKW+OZpBt8hOSLKGCxUo3IDA=="
+                length="4041839"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.6.3</title>
+            <pubDate>Wed, 06 May 2026 19:36:33 +0000</pubDate>
+            <sparkle:version>1.6.3</sparkle:version>
+            <sparkle:shortVersionString>1.6.3</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.6.3</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.6.3/Hermes-Agent-v1.6.3.dmg"
+                sparkle:edSignature="ES1Z/9iyBrDiuFcjrU2FwI0HKIpRPRonuuZ5yzQDp3lmopqjdBG4J7veyGJN8xicmPyHpeXrSo0fB9Mpz3KNCg=="
+                length="3790963"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.6.2</title>
+            <pubDate>Wed, 06 May 2026 18:43:24 +0000</pubDate>
+            <sparkle:version>1.6.2</sparkle:version>
+            <sparkle:shortVersionString>1.6.2</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.6.2</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.6.2/Hermes-Agent-v1.6.2.dmg"
+                sparkle:edSignature="xZWXg7EHznjqH5hazQ/5saZnsdD3aoWs1ejsDGqvwoQ/iXf4sBrW97WeBTmdcMHcq/hHIy+xm5tLG30YnqWIDw=="
+                length="4039954"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.6.1</title>
+            <pubDate>Sat, 02 May 2026 03:52:06 +0000</pubDate>
+            <sparkle:version>1.6.1</sparkle:version>
+            <sparkle:shortVersionString>1.6.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.6.1</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.6.1/Hermes-Agent-v1.6.1.dmg"
+                sparkle:edSignature="oXcVneHQ2bV19lTOUvq9amRlJvgIraBp9j60x3Rq+uIz0VcOjB1EDEP0mKgIbXP8Uz6n34HXqCBKYO0l5iDvCA=="
+                length="4037356"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.6.0</title>
+            <pubDate>Sat, 02 May 2026 02:15:05 +0000</pubDate>
+            <sparkle:version>1.6.0</sparkle:version>
+            <sparkle:shortVersionString>1.6.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.6.0</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.6.0/Hermes-Agent-v1.6.0.dmg"
+                sparkle:edSignature="+p3Mw/mZC98MprQGIeYqsXxcFsI9UctwkX/PQlMnhKq7e01II2eeLbjER5qQpsYLTN09Iy3966hs5FV70K7xAw=="
+                length="3994533"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.5.4</title>
+            <pubDate>Sat, 02 May 2026 01:30:02 +0000</pubDate>
+            <sparkle:version>1.5.4</sparkle:version>
+            <sparkle:shortVersionString>1.5.4</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.5.4</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.5.4/Hermes-Agent-v1.5.4.dmg"
+                sparkle:edSignature="Z7SrmJfygiYPTUOdJERovq1pJ/VU619N8APle6XmygUQ8vg4iGXm4gAxG7gAtMhi/7eEY+CUDQfAFFVlQl3aDA=="
+                length="3948605"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.5.3</title>
+            <pubDate>Tue, 28 Apr 2026 05:53:18 +0000</pubDate>
+            <sparkle:version>1.5.3</sparkle:version>
+            <sparkle:shortVersionString>1.5.3</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.5.3</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.5.3/Hermes-Agent-v1.5.3.dmg"
+                sparkle:edSignature="MlIAi6nsyqKvPpK5HvixAFF8kLiMHwwDyUI24hWEiJRNEwRyk/3UchqwHGsdbKT+7Suy6tbBdLRk0EDE9Xj7DQ=="
+                length="3946330"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.5.2</title>
+            <pubDate>Sat, 25 Apr 2026 23:42:50 +0000</pubDate>
+            <sparkle:version>1.5.2</sparkle:version>
+            <sparkle:shortVersionString>1.5.2</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.5.2</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.5.2/Hermes-Agent-v1.5.2.dmg"
+                sparkle:edSignature="M9udObqVHjIVZdukynOe6Y0LpPvGo8d2DHPZqJs0cyD4/L3ueUAV7fA5BQ09yEmOOQMaGiv+d6ZvajMmQ5c+DQ=="
+                length="3947644"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.5.1</title>
+            <pubDate>Sat, 25 Apr 2026 23:35:32 +0000</pubDate>
+            <sparkle:version>1.5.1</sparkle:version>
+            <sparkle:shortVersionString>1.5.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.5.1</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.5.1/Hermes-Agent-v1.5.1.dmg"
+                sparkle:edSignature="ttp1wJ0gvYZvlYaY2U8/dQZuXZYtyEiDI8mjKrfiSm0Sf3QwxijhIRo6hiiU/KPN4WnAT0/RYREyJ8Rn2kZlCQ=="
+                length="3950142"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.5.0</title>
+            <pubDate>Sat, 25 Apr 2026 23:23:20 +0000</pubDate>
+            <sparkle:version>1.5.0</sparkle:version>
+            <sparkle:shortVersionString>1.5.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.5.0</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.5.0/Hermes-Agent-v1.5.0.dmg"
+                sparkle:edSignature="5YH7b34JTdbD6hWq0GMWqEf+igWwguGVhsA3fyL8P7wt04/pR8DhVEdYbJyvGid+mvVzM0KuJMBkSjZPIAYaDA=="
+                length="3946961"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.4.1</title>
+            <pubDate>Thu, 23 Apr 2026 17:59:31 +0000</pubDate>
+            <sparkle:version>1.4.1</sparkle:version>
+            <sparkle:shortVersionString>1.4.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.4.1</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.4.1/Hermes-Agent-v1.4.1.dmg"
+                sparkle:edSignature="H7ZH5Co7PjIFLAuY9J8SE2qrmsNbNksLT+JySk5SJUmgnYXA3p/5zXAjhHt3dxplM8MuWFKDeuCP3QLakyTYBw=="
+                length="3912349"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.4.0</title>
+            <pubDate>Thu, 23 Apr 2026 17:49:04 +0000</pubDate>
+            <sparkle:version>1.4.0</sparkle:version>
+            <sparkle:shortVersionString>1.4.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.4.0</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.4.0/Hermes-Agent-v1.4.0.dmg"
+                sparkle:edSignature="7xTv/YHRqa2qf94b2u6Vdz6szEkkCH4tJzCPbS/ia3MSMgnG6IPEbvPgqVK5wYp+8f8101jyeBmBQ7asEin3CQ=="
+                length="3910977"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.3.6</title>
+            <pubDate>Mon, 20 Apr 2026 23:05:28 +0000</pubDate>
+            <sparkle:version>1.3.6</sparkle:version>
+            <sparkle:shortVersionString>1.3.6</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.3.6</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.3.6/Hermes-Agent-v1.3.6.dmg"
+                sparkle:edSignature="1rzza+TOdYyFKT5IW2rD7kF7+NEZgOC+aU17dJBCyK1Nd31LGX2Iv5k85Znkhf6+1+801K2aLucD1qvlLSGyAA=="
+                length="3894328"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.3.5</title>
+            <pubDate>Mon, 20 Apr 2026 22:52:01 +0000</pubDate>
+            <sparkle:version>1.3.5</sparkle:version>
+            <sparkle:shortVersionString>1.3.5</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.3.5</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.3.5/Hermes-Agent-v1.3.5.dmg"
+                sparkle:edSignature="Hq9PidIePU5r/T/wz2d90n+wKhEKYuDDrlwZ6VCDiL+spf2gOUKbE+pKxP/CqY9eh5hOnz/8njSE2Amh8rnGAA=="
+                length="3894256"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.3.4</title>
+            <pubDate>Mon, 20 Apr 2026 22:14:06 +0000</pubDate>
+            <sparkle:version>1.3.4</sparkle:version>
+            <sparkle:shortVersionString>1.3.4</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.3.4</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.3.4/Hermes-Agent-v1.3.4.dmg"
+                sparkle:edSignature="GVAKnyI/GqX66BdBo4b8zpgnBV8eZk3fgX+deIJB1+yCf4a5AoK5xvnNEresCco02iZozN6m8yfNb8F/gM5nDA=="
+                length="3891728"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.3.3</title>
+            <pubDate>Mon, 20 Apr 2026 21:40:14 +0000</pubDate>
+            <sparkle:version>1.3.3</sparkle:version>
+            <sparkle:shortVersionString>1.3.3</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.3.3</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.3.3/Hermes-Agent-v1.3.3.dmg"
+                sparkle:edSignature="9CHZRDQC4kIeIvb2mM0jc7xPhGxiMeVO17A4dgHnKeOg8lF1Ib6Qkz/iNvRwgvZOMPHkR+8fA57G7ft/emFyBA=="
+                length="3892169"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.3.2</title>
+            <pubDate>Mon, 20 Apr 2026 20:49:21 +0000</pubDate>
+            <sparkle:version>1.3.2</sparkle:version>
+            <sparkle:shortVersionString>1.3.2</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.3.2</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.3.2/Hermes-Agent-v1.3.2.dmg"
+                sparkle:edSignature="iQY3nwG51fLSNbVix1s80Cxa8Iwxsv3jVBB2pewCLZQk3Mqm6pK6ZXQ76yCLTrFxXKikZQVOqSzSLjIaMksnAA=="
+                length="3888309"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.3.1</title>
+            <pubDate>Mon, 20 Apr 2026 20:20:22 +0000</pubDate>
+            <sparkle:version>1.3.1</sparkle:version>
+            <sparkle:shortVersionString>1.3.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.3.1</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.3.1/Hermes-Agent-v1.3.1.dmg"
+                sparkle:edSignature="NKKLJzwWqC+9r1GfMInu6Sk3Utb6wlkbj2fg0TaP9nYH9FCqaUIf/MiV0XEC1h2hQivM7zuLDOSk6kIXJKCkAw=="
+                length="3891144"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.3.0</title>
+            <pubDate>Mon, 20 Apr 2026 20:07:00 +0000</pubDate>
+            <sparkle:version>1.3.0</sparkle:version>
+            <sparkle:shortVersionString>1.3.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.3.0</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.3.0/Hermes-Agent-v1.3.0.dmg"
+                sparkle:edSignature="SbYL5OT918WTVRQyQM4jWZE3vItCgODT4dHRHKWQPpF/MJftyL7LEKbeNMDKK6W3PpiHlF9SsyE3M1bWmNyXCA=="
+                length="3891378"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.2.2</title>
+            <pubDate>Mon, 20 Apr 2026 06:54:31 +0000</pubDate>
+            <sparkle:version>1.2.2</sparkle:version>
+            <sparkle:shortVersionString>1.2.2</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.2.2</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.2.2/Hermes-Agent-v1.2.2.dmg"
+                sparkle:edSignature="XB46zs0g9JIJD4YtrFe3fSY5G8Y+kxOnC+DUjGjLHNOmVJMp9SsJ4AyEnBDB1HZebjD2DN7EskahOv9xQvsOBA=="
+                length="3879390"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.2.1</title>
+            <pubDate>Mon, 20 Apr 2026 06:35:21 +0000</pubDate>
+            <sparkle:version>1.2.1</sparkle:version>
+            <sparkle:shortVersionString>1.2.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.2.1</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.2.1/Hermes-Agent-v1.2.1.dmg"
+                sparkle:edSignature="BmkfVUfi8rAlWI6uJpmcy7CDK4WKmFE+hiMzeejXIVFhHiyDn6ONtcm4UsZmr0Lsg585Ht5FPiker4i9X+CZDA=="
+                length="3876809"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.1.0</title>
+            <pubDate>Sun, 19 Apr 2026 04:58:30 +0000</pubDate>
+            <sparkle:version>1.1.0</sparkle:version>
+            <sparkle:shortVersionString>1.1.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.1.0</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.1.0/Hermes-Agent-v1.1.0.dmg"
+                sparkle:edSignature="OUApShzBayyRp47vaDpxS+md/OPA0hPpSRG2yVflhB2wgFNSxZR72JjuWC4j8W5z5Ej90paTu8dTHllGI4ynCQ=="
+                length="3863787"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.0.9</title>
+            <pubDate>Fri, 17 Apr 2026 06:39:14 +0000</pubDate>
+            <sparkle:version>1.0.9</sparkle:version>
+            <sparkle:shortVersionString>1.0.9</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.0.9</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.0.9/Hermes-Agent-v1.0.9.dmg"
+                sparkle:edSignature="iSQ3uashMt8MxGez1t6XftflPfty3+SIFbRnTIUnexDewaEEXfOGclnrzXKv7hQ7Wflb95qTjfGQsC6iKJdhCA=="
+                length="3888284"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.0.8</title>
+            <pubDate>Fri, 17 Apr 2026 04:52:32 +0000</pubDate>
+            <sparkle:version>1.0.8</sparkle:version>
+            <sparkle:shortVersionString>1.0.8</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.0.8</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.0.8/Hermes-Agent-v1.0.8.dmg"
+                sparkle:edSignature="+HTht5+d1BDUpk87nf2O9A3mz6+p3FdfPrY5ShtsYQSFkGCr/NZVPkZv3ExyaYnyAUs2z5oEmUaojFbSsZ/2AQ=="
+                length="3893824"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.0.7</title>
+            <pubDate>Fri, 17 Apr 2026 04:20:38 +0000</pubDate>
+            <sparkle:version>1.0.7</sparkle:version>
+            <sparkle:shortVersionString>1.0.7</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.0.7</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.0.7/Hermes-Agent-v1.0.7.dmg"
+                sparkle:edSignature="aojjsHx2VLWB2erQcuCw3WkWZqnU/q3yzaUeykXHsM+RKyNWdDrQwP2Wgya9W6RtFpLWWqbhnTPZPeLtoQtUAA=="
+                length="3881618"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.0.6</title>
+            <pubDate>Fri, 17 Apr 2026 04:12:05 +0000</pubDate>
+            <sparkle:version>1.0.6</sparkle:version>
+            <sparkle:shortVersionString>1.0.6</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.0.6</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.0.6/Hermes-Agent-v1.0.6.dmg"
+                sparkle:edSignature="+Bt9dbtGLwPIriw/LInfHFpCxzmxbhN/zPADjhConpBmhugw9qqPyUNvGvn6y5fxb2MkdxrdzG8phWsETOYdAg=="
+                length="3995111"
+                type="application/octet-stream"/>
+        </item>
+
+
+        <item>
+            <title>Version 1.0.5</title>
+            <pubDate>Fri, 17 Apr 2026 03:48:49 +0000</pubDate>
+            <sparkle:version>1.0.5</sparkle:version>
+            <sparkle:shortVersionString>1.0.5</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>12.0</sparkle:minimumSystemVersion>
+            <sparkle:releaseNotesLink>https://github.com/hermes-webui/hermes-swift-mac/releases/tag/v1.0.5</sparkle:releaseNotesLink>
+            <enclosure
+                url="https://github.com/hermes-webui/hermes-swift-mac/releases/download/v1.0.5/Hermes-Agent-v1.0.5.dmg"
+                sparkle:edSignature="yzTSAM1tF2lDpe3UjRlw9ZSfYNqLSet8d/sy10/whSpyC9upcOSqwvb1Nnahm06UngiVfAky9FEqjX0zkEHODQ=="
+                length="4658234"
+                type="application/octet-stream"/>
+        </item>
+
+    </channel>
+</rss>

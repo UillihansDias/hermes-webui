@@ -80,3 +80,10 @@ docs/ui-ux/review-shots/
 
 # Python build metadata (never commit generated egg-info)
 *.egg-info/
+
+# Swift / macOS build artifacts
+macos/.build/
+macos/.swiftpm/
+macos/*.app
+macos/AppIcon.iconset
+

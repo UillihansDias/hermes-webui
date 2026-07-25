@@ -57,6 +57,14 @@ def test_theme_button_has_a_css_fallback_before_javascript_syncs():
     assert ":root.dark .rail-theme-toggle #btnThemeToggle .moon-icon" in STYLE
 
 
+def test_theme_picker_explicitly_shows_the_selected_icon():
+    sync = BOOT.split("function _syncThemePicker(active)", 1)[1].split(
+        "function toggleThemeDropdown", 1
+    )[0]
+    assert "active==='system'?'.system-icon'" in sync
+    assert "activeIcon.style.display='block'" in sync
+
+
 def test_empty_dashboard_info_does_not_separate_heading_from_subtitle():
     center_info = INDEX.split('id="dashboardCenterInfo"', 1)[1].split(">", 1)[0]
     assert "style=" not in center_info

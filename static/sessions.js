@@ -1817,7 +1817,7 @@ async function loadSession(sid){
     }
     _loadingOlder = false;
     const _msgInner = $('msgInner');
-    if (_msgInner && currentSid !== sid) _msgInner.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);font-size:14px;padding:40px;text-align:center;">Loading conversation...</div>';
+    if (_msgInner && currentSid !== sid) _msgInner.replaceChildren();
   }
   // Phase 1: Load metadata only (~1KB) for fast session switching. Keep model
   // resolution out of the first-paint path; old provider-shaped model IDs are
@@ -2230,7 +2230,7 @@ async function loadSession(sid){
       }
       // Network errors, server failures, or SSE drops (Chrome error codes 4/5)
       // can cause _ensureMessagesLoaded to throw. Without a try/catch here the
-      // "Loading conversation..." div injected at the top of loadSession would
+      // The blank loading state established at the top of loadSession would
       // persist forever with no recovery path.
       const _msgInner = $('msgInner');
       if (_msgInner) {

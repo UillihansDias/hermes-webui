@@ -767,13 +767,13 @@ def test_loadSession_inflight_merges_tail_with_persisted_transcript(cleanup_test
     )
 
 
-def test_renderMessages_preserves_loading_placeholder_for_session_switch(cleanup_test_sessions):
+def test_renderMessages_preserves_blank_loading_state_for_session_switch(cleanup_test_sessions):
     """R16d: renderMessages should not repaint transcript during session-load window.
 
     During loadSession(sid) after the loading metadata call, S.messages is
     intentionally empty until _ensureMessagesLoaded(sid) settles. A concurrent
-    renderMessages() must keep the existing 'Loading conversation...' placeholder
-    instead of clearing #msgInner to an empty transcript.
+    renderMessages() must preserve the intentionally blank message pane instead
+    of painting an empty-transcript state.
     """
     ui_src = (REPO_ROOT / "static/ui.js").read_text()
     fn_start = ui_src.find("function renderMessages")

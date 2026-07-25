@@ -2919,7 +2919,7 @@ function _syncThemePicker(active){
     themeButton.querySelectorAll('.sun-icon,.moon-icon,.system-icon').forEach(icon=>{ icon.style.display='none'; });
     const iconClass=active==='light'?'.sun-icon':active==='system'?'.system-icon':'.moon-icon';
     const activeIcon=themeButton.querySelector(iconClass);
-    if(activeIcon) activeIcon.style.display='';
+    if(activeIcon) activeIcon.style.display='block';
   }
 }
 

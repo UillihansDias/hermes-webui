@@ -1327,6 +1327,12 @@ const LOCALES = {
     suggest_files: 'What files are in this workspace?',
     suggest_schedule: "What's on my schedule today?",
     suggest_plan: 'Help me plan a small project.',
+    empty_subtitle_lead: 'Type a message below ·',
+    empty_subtitle_commands: 'for commands',
+    suggest_capabilities: 'What can you do?',
+    suggest_recent_sessions: 'Summarize my recent sessions',
+    suggest_channel: 'Help me configure a channel',
+    suggest_health: 'Check system health',
     // onboarding
     onboarding_badge: 'FIRST RUN',
     onboarding_title: 'Welcome to Hermes Web UI',

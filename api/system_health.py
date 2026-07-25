@@ -159,6 +159,45 @@ def _safe_error(metric: str, exc: Exception) -> dict[str, str]:
     return {"metric": metric, "code": type(exc).__name__}
 
 
+def _network_status() -> dict[str, Any]:
+    try:
+        return {
+            "hostname": socket.getfqdn(),
+            "loopback": socket.gethostbyname("localhost"),
+            "host": socket.gethostbyname(socket.gethostname()),
+        }
+    except Exception as exc:
+        return _safe_error("network", exc)
+
+
+def _uptime_seconds() -> float | dict[str, str]:
+    try:
+        source = "monotonic" if hasattr(time, "monotonic") else "wall"
+        value = time.monotonic() if source == "monotonic" else time.time()
+        return round(value, 1)
+    except Exception as exc:
+        return _safe_error("uptime", exc)
+
+
+def build_system_status_payload() -> dict[str, Any]:
+    health = build_system_health_payload()
+    errors = [dict(item) for item in health.get("errors", [])]
+    uptime = _uptime_seconds()
+    data: dict[str, Any] = {
+        "status": health.get("status", "unavailable"),
+        "checked_at": datetime.now(timezone.utc).isoformat(),
+        "uptime_seconds": uptime if isinstance(uptime, (int, float)) else None,
+        "uptime_source": "monotonic" if hasattr(time, "monotonic") else "wall",
+        "cpu": health.get("cpu"),
+        "memory": health.get("memory"),
+        "disk": health.get("disk"),
+        "network": _network_status(),
+    }
+    if errors:
+        data["errors"] = errors
+    return data
+
+
 def build_system_health_payload() -> dict[str, Any]:
     metrics: dict[str, Any] = {"cpu": None, "memory": None, "disk": None}
     errors: list[dict[str, str]] = []

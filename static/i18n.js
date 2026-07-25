@@ -1317,7 +1317,7 @@ const LOCALES = {
     save_skill: 'Save skill',
     editing: 'Editing',
     // Empty state
-    empty_title: 'What can I help with?',
+    empty_title: 'Hermes Agent',
     empty_subtitle: 'Ask anything, run commands, explore files, or manage your scheduled tasks.',
     suggest_files: 'What files are in this workspace?',
     suggest_schedule: "What's on my schedule today?",
